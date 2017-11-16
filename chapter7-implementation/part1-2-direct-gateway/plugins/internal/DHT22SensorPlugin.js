@@ -4,11 +4,11 @@ var resources = require('./../../resources/model'),
 var interval, sensor;
 var model = resources.pi.sensors;
 var pluginName = 'Temperature & Humidity';
-var localParams = {'simulate': false, 'frequency': 5000};
+var localParams = { 'simulate': false, 'frequency': 50000 };
 
 exports.start = function (params) {
   localParams = params;
-  if (params.simulate) {
+  if (localParams.simulate) {
     simulate();
   } else {
     connectHardware();
@@ -16,7 +16,7 @@ exports.start = function (params) {
 };
 
 exports.stop = function () {
-  if (params.simulate) {
+  if (localParams.simulate) {
     clearInterval(interval);
   } else {
     sensor.unexport();
@@ -25,29 +25,44 @@ exports.stop = function () {
 };
 
 function connectHardware() {
- var sensorDriver = require('node-dht-sensor');
-  var sensor = {
-    initialize: function () {
-      return sensorDriver.initialize(22, model.temperature.gpio); //#A
-    },
-    read: function () {
-      var readout = sensorDriver.read(); //#B
-      model.temperature.value = parseFloat(readout.temperature.toFixed(2));
-      model.humidity.value = parseFloat(readout.humidity.toFixed(2)); //#C
-      showValue();
-
-      setTimeout(function () {
-        sensor.read(); //#D
-      }, localParams.frequency);
-    }
-  };
-  if (sensor.initialize()) {
-    console.info('Hardware %s sensor started!', pluginName);
-    sensor.read();
-  } else {
-    console.warn('Failed to initialize sensor!');
-  }
+  read();
 };
+  function read() {
+    var rpiDhtSensor = require('rpi-dht-sensor');
+    var dht = new rpiDhtSensor.DHT11(4);
+    var readout = dht.read();
+
+    console.log('True Temperature: ' + readout.temperature.toFixed(2) + 'C, ' +
+      'humidity: ' + readout.humidity.toFixed(2) + '%');
+      model.temperature.value = parseFloat(readout.temperature.toFixed(2));
+      model.humidity.value = parseFloat(readout.humidity.toFixed(2));
+    setTimeout(read, localParams.frequency);
+  };
+ 
+  //  var sensorDriver = require('node-dht-sensor');
+  //   var sensor = {
+  //     initialize: function () {
+  //       return sensorDriver.initialize(11, model.temperature.gpio); //#A
+  //     },
+  //     read: function () {
+  //       var readout = sensorDriver.read(); //#B
+  //       model.temperature.value = parseFloat(readout.temperature.toFixed(2));
+  //       model.humidity.value = parseFloat(readout.humidity.toFixed(2)); //#C
+  //      console.log('True Temperature: ' + readout.temperature.toFixed(2) + 'C, ' +
+  //    'humidity: ' + readout.humidity.toFixed(2) + '%');
+  //       showValue();
+
+//   setTimeout(function () {
+//     sensor.read(); //#D
+//   }, localParams.frequency);
+// }
+// if (sensor.initialize()) {
+//   console.info('Hardware %s sensor started!', pluginName);
+//   sensor.read();
+// } else {
+//   console.warn('Failed to initialize sensor!');
+// }
+// };
 
 function simulate() {
   interval = setInterval(function () {
@@ -59,7 +74,7 @@ function simulate() {
 };
 
 function showValue() {
-  console.info('Temperature: %s C, humidity %s \%',
+  console.info('True Temperature: %s C, humidity %s \%',
     model.temperature.value, model.humidity.value);
 };
 

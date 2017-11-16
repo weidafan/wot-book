@@ -1,5 +1,7 @@
 var resources = require('./../../resources/model');
 
+var objPoly = require('object.observe');
+
 var actuator, interval;
 var model = resources.pi.actuators.leds['1'];
 var pluginName = model.name;
@@ -7,13 +9,13 @@ var localParams = {'simulate': false, 'frequency': 2000};
 
 exports.start = function (params) {
   localParams = params;
-  observe(model); //#A
+  //observe(model); //#A
 
   if (localParams.simulate) {
     simulate();
   } else {
-    connectHardware();
-  }
+    var value = model.value;
+    simulate(value);  }
 };
 
 exports.stop = function () {
@@ -25,35 +27,56 @@ exports.stop = function () {
   console.info('%s plugin stopped!', pluginName);
 };
 
-function observe(what) {
-  Object.observe(what, function (changes) {
-    console.info('Change detected by plugin for %s...', pluginName);
-    switchOnOff(model.value); //#B
-  });
-};
+
+//obj.observe(what);
+// function observer(what) {
+//   objPoly.observe(what, function (changes) {
+//     console.info('Change detected by plugin for %s...', pluginName);
+//     switchOnOff(model.value); //#B
+//   });
+// };
+
+
+// function observe(what) {
+//   Object.observe(what, function (changes) {
+//     console.info('Change detected by plugin for %s...', pluginName);
+//     switchOnOff(model.value); //#B
+//   });
+// };
 
 function switchOnOff(value) {
-  if (!localParams.simulate) {
-    actuator.write(value === true ? 1 : 0, function () { //#C
-      console.info('Changed value of %s to %s', pluginName, value);
-    });
-  }
+
+  interval = setInterval(function () {
+
+    if (!localParams.simulate) {
+      actuator.write(value === true ? 1 : 0, function () { //#C
+        console.info('Changed value of %s to %s', pluginName, value);
+      });
+    }
+    // Switch value on a regular basis
+  }, localParams.frequency);
+ 
 };
 
 function connectHardware() {
+  interval = setInterval(function () {
   var Gpio = require('onoff').Gpio;
   actuator = new Gpio(model.gpio, 'out'); //#D
   console.info('Hardware %s actuator started!', pluginName);
+  actuator.write(value === true ? 1 : 0, function () { //#C
+    console.info('Changed value of %s to %s', pluginName, value);
+  });
+}, localParams.frequency);
 };
 
-function simulate() {
+function simulate(value) {
   interval = setInterval(function () {
     // Switch value on a regular basis
-    if (model.value) {
-      model.value = false;
-    } else {
-      model.value = true;
-    }
+    var Gpio = require('onoff').Gpio;
+    actuator = new Gpio(model.gpio, 'out'); //#D
+      actuator.write(value === true ? 1 : 0, function () { //#C
+        console.info('Changed value of %s to %s', pluginName, value);
+      });   
   }, localParams.frequency);
   console.info('Simulated %s actuator started!', pluginName);
 };

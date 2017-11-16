@@ -1,3 +1,25 @@
+// var resources = require('./../resources/model');
+// var actuator, interval;
+// var model = resources.pi.actuators.leds['1'];
+// var pluginName = model.name;
+// var localParams = {'simulate': false, 'frequency': 2000};
+// var Gpio = require('onoff').Gpio;
+
+
+
+// function switchOnOff(value) {
+//     console.info('switchOnOff is called');
+//     interval = setInterval(function () {
+
+//       actuator = new Gpio(model.gpio, 'out'); 
+//         actuator.write(value === true ? 1 : 0, function () { //#C
+//           console.info('Changed value of %s to %s', pluginName, value);
+//         });
+      
+//       // Switch value on a regular basis
+//     }, localParams.frequency);
+// }
+
 var express = require('express'),
   router = express.Router(),
   resources = require('./../resources/model');
@@ -18,7 +40,10 @@ router.route('/leds/:id').get(function (req, res, next) { //#A
 }).put(function(req, res, next) { //#B
   var selectedLed = resources.pi.actuators.leds[req.params.id];
   selectedLed.value = req.body.value; //#C
+  console.info('Changed LED %s value to %s', req.params.id, selectedLed.value);
   req.result = selectedLed;
+  console.info('Inside router');
+  //switchOnOff(selectedLed);
   next();
 });
 
