@@ -15,7 +15,7 @@ pirPlugin.start({'simulate': true, 'frequency': 2000}); //#B
 
 
 
-ledsPlugin.start({'simulate': false, 'frequency': 800}); //#B
+ledsPlugin.start({'simulate': true, 'frequency': 800}); //#B
 
 //ledsPlugin.start({'simulate': false, 'frequency': 200}); //#B
 

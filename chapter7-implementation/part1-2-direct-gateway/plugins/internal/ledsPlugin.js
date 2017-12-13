@@ -1,7 +1,5 @@
 var resources = require('./../../resources/model');
 
-var objPoly = require('object.observe');
-
 var actuator, interval;
 var model = resources.pi.actuators.leds['1'];
 var pluginName = model.name;
@@ -14,8 +12,8 @@ exports.start = function (params) {
   if (localParams.simulate) {
     simulate();
   } else {
-    var value = model.value;
-    simulate(value);  }
+    connectHardware();
+  }
 };
 
 exports.stop = function () {
@@ -27,16 +25,6 @@ exports.stop = function () {
   console.info('%s plugin stopped!', pluginName);
 };
 
-
-//obj.observe(what);
-// function observer(what) {
-//   objPoly.observe(what, function (changes) {
-//     console.info('Change detected by plugin for %s...', pluginName);
-//     switchOnOff(model.value); //#B
-//   });
-// };
-
-
 // function observe(what) {
 //   Object.observe(what, function (changes) {
 //     console.info('Change detected by plugin for %s...', pluginName);
@@ -45,38 +33,38 @@ exports.stop = function () {
 // };
 
 function switchOnOff(value) {
-
-  interval = setInterval(function () {
-
-    if (!localParams.simulate) {
-      actuator.write(value === true ? 1 : 0, function () { //#C
-        console.info('Changed value of %s to %s', pluginName, value);
-      });
-    }
-    // Switch value on a regular basis
-  }, localParams.frequency);
- 
+  if (!localParams.simulate) {
+    actuator.write(value === true ? 1 : 0, function () { //#C
+      console.info('Changed value of %s to %s', pluginName, value);
+    });
+  }
 };
 
 function connectHardware() {
-  interval = setInterval(function () {
   var Gpio = require('onoff').Gpio;
   actuator = new Gpio(model.gpio, 'out'); //#D
   console.info('Hardware %s actuator started!', pluginName);
-  actuator.write(value === true ? 1 : 0, function () { //#C
-    console.info('Changed value of %s to %s', pluginName, value);
-  });
-}, localParams.frequency);
 };
 
-function simulate(value) {
+function simulate() {
   interval = setInterval(function () {
-    // Switch value on a regular basis
+    
     var Gpio = require('onoff').Gpio;
     actuator = new Gpio(model.gpio, 'out'); //#D
-      actuator.write(value === true ? 1 : 0, function () { //#C
-        console.info('Changed value of %s to %s', pluginName, value);
-      });   
+    console.info('Hardware %s actuator started!', pluginName);
+
+
+    // Switch value on a regular basis
+    if (model.value) {
+      model.value = false;
+      actuator.write(0);
+      console.log('LED ==== LOW');
+      
+    } else {
+      model.value = true;
+      actuator.write(1);
+      console.log('LED ===== HIGH');
+    }
   }, localParams.frequency);
   console.info('Simulated %s actuator started!', pluginName);
 };
@@ -85,4 +73,3 @@ function simulate(value) {
 //#B Listen for model changes, on changes call switchOnOff
 //#C Change the LED state by changing the GPIO state
 //#D Connect the GPIO in write (output) mode
-
