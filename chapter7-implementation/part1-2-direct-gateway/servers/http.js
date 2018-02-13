@@ -17,9 +17,13 @@ app.use(cors());
 app.use('/pi/actuators', actuatorsRoutes);
 app.use('/pi/sensors', sensorRoutes);
 app.use('/things', thingsRoutes);
-
+app.use(express.static('View'));
 app.get('/pi', function (req, res) {
   res.send('This is the WoT-Pi!')
+});
+
+app.get('/index.html', function (req, res) {
+  res.sendfile(/index.html);
 });
 
 // For representation design
