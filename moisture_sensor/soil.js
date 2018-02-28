@@ -5,7 +5,7 @@ var Mcp3008 = require('mcp3008.js');
     channel = 1;
 adc.poll(channel,1003, function (value) {
     console.log("The soil humidity is: "+value);
-    if(value>500){
+    if(value<500){
 	led.writeSync(1);
     }
     else{
