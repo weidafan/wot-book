@@ -16,6 +16,7 @@ var client = mqtt.connect("mqtts://mqtt.evrythng.com:8883", {// #B
 client.on('connect', function () { // #C
   client.subscribe(thngUrl+'/properties/'); //#D
   updateProperty('livenow', true); //#E
+  //updateProperty('status',ture);  // weida add status property
 
   if (!interval) interval = setInterval(updateProperties, 5000); //#F
 });
@@ -34,6 +35,7 @@ function updateProperties () {
 
   var power = (voltage * current * (0.6+Math.random()/10)).toFixed(3); // #J
   updateProperty ('power',power);
+ // updateProperty('status',true);
 }
 
 function updateProperty (property,value) {

@@ -18,6 +18,12 @@ router.route('/temperature').get(function (req, res, next) {
   next();
 });
 
+// weida add light sensor route
+router.route('/light').get(function (req, res, next) {
+  req.result = resources.pi.sensors.light;
+  next();
+});
+
 router.route('/humidity').get(function (req, res, next) {
   req.result = resources.pi.sensors.humidity;
   next();

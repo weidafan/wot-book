@@ -1,6 +1,6 @@
 {
   "pi": {
-    "name": "WoT Pi",
+    "name": "Garden Pi",
     "description": "A simple WoT-connected Raspberry PI for the WoT book.",
     "port": 8484,
     "sensors": {
@@ -17,6 +17,13 @@
         "unit": "%",
         "value": 0,
         "gpio": 4
+      },
+      "ligth": {
+        "name": "light Sensor",
+        "description": "An ambient light sensor.",
+        "unit": "celsius",
+        "value": 0,
+        "gpio": 0
       },
       "pir": {
         "name": "Passive Infrared",
@@ -37,6 +44,11 @@
           "value": false,
           "gpio": 9
         }
+      },
+      "valve": {
+        "name":"solenoid water valve",
+        "value": false,
+        "gpio": 0
       }
     }
   }

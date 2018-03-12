@@ -22,9 +22,9 @@ app.get('/pi', function (req, res) {
   res.send('This is the WoT-Pi!')
 });
 
-app.get('/index.html', function (req, res) {
-  res.sendfile(/index.html);
-});
+// app.get('/index.html', function (req, res) {
+//   res.sendfile(/index.html);
+// });
 
 // For representation design
 app.use(converter());

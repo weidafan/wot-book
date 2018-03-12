@@ -34,6 +34,12 @@ router.route('/leds').get(function (req, res, next) {
   next();
 });
 
+//weida add valve route
+router.route('/valve').get(function (req, res, next) {
+  req.result = resources.pi.actuators.valve;
+  next();
+});
+
 router.route('/leds/:id').get(function (req, res, next) { //#A
   req.result = resources.pi.actuators.leds[req.params.id];
   next();
